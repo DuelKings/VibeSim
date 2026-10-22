@@ -1,0 +1,10 @@
+1. What happens to the energy if I slowly pull the two atoms in H2 apart?
+STATUS: COMPLETED (finite-basis electronic curve; not spectroscopic accuracy)
+Starting near the bond minimum, pulling H2 apart raises its energy, progressively flattening toward two separate neutral H atoms. At compressed distances the repulsive energy rises as well. No activation barrier or rate is inferred.
+Calculated full-CI/cc-pVDZ grid minimum: R=0.76 angstrom, E=-1.163672458226 Eh.
+Electronic dissociation energy from this grid: 4.49303 eV = 433.511 kJ/mol.
+At 6 angstrom, energy minus isolated 2H reference = -0.00000710 eV.
+Full-CI/cc-pVTZ check at 0.74 angstrom gives D_e=4.69975 eV; DZ-to-TZ shift at identical geometry=0.21483 eV. This shift indicates basis sensitivity, not a rigorous error bar.
+Method: ORCA 6.1.1, spin-adapted full CI using ALL 10 (DZ) / 28 (TZ) orbitals active with 2 electrons; neutral singlet H2. One-electron neutral doublet H references use UHF in matching basis, exact for one electron within that basis. Full CI avoids restricted single-determinant dissociation artifacts. CI solution and normal termination checked; orbital optimization is unnecessary for a full orbital space. See outputs for full-CI warning (informational, expected).
+Limitations: modest finite Gaussian bases, residual basis error and basis-set superposition effects; coarse distance grid (minimum not optimized), no complete-basis extrapolation, ZPE/D0, finite-temperature free energy, solvent, relativity or nuclear nonadiabatic effects. Report D_e, NOT D0 or activation energy. No fitted equilibrium claim or frequency minimum claim.
+Artifacts: curve.csv, H2_curve.png/svg, analysis.json, jobs.json, all inputs/out/resources/bibtex/side files. Pilot at 0.74 A reused within this task only.

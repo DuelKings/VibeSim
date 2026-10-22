@@ -1,0 +1,5 @@
+! UHF cc-pVTZ TightSCF
+%maxcore 512
+* xyz 0 2
+H 0 0 0
+*

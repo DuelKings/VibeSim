@@ -1,0 +1,42 @@
+{
+  "species": {
+    "ch4": {
+      "energy_Eh": -40.494915367081,
+      "enthalpy_Eh": -40.44654558,
+      "normal": true,
+      "opt_converged": true,
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_s": 4.107237100601196
+    },
+    "o2": {
+      "energy_Eh": -150.317737023184,
+      "enthalpy_Eh": -150.31076089,
+      "normal": true,
+      "opt_converged": true,
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_s": 2.865041732788086
+    },
+    "co2": {
+      "energy_Eh": -188.570062871413,
+      "enthalpy_Eh": -188.55483062,
+      "normal": true,
+      "opt_converged": true,
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_s": 6.374160528182983
+    },
+    "h2o": {
+      "energy_Eh": -76.418938720755,
+      "enthalpy_Eh": -76.39374557,
+      "normal": true,
+      "opt_converged": true,
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_s": 2.868746757507324
+    }
+  },
+  "quantity_used": "enthalpy_Eh",
+  "delta_reaction_kJ_mol": -720.0548283256743
+}

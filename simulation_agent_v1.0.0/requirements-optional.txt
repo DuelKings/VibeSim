@@ -1,0 +1,7 @@
+# All are optional: check Python/platform wheels and chemistry backend separately.
+numpy
+scipy
+psutil
+ase
+rdkit
+pymatgen

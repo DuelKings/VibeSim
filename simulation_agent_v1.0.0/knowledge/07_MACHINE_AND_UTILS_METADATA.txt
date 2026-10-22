@@ -1,0 +1,21 @@
+AGENTIC SIMULATION: PORTABLE MACHINE AND UTILITY METADATA TEMPLATE
+VERSION: 1.0.0
+
+This repository intentionally contains no host-specific detection report. Before execution:
+
+1. Run initialize.py separately on every execution target (Windows and WSL/Linux where applicable).
+2. Copy config/machine.example.json at the repository root to config/machine.local.json and fill verified paths.
+3. Record CPU threads, available RAM, required RAM headroom, storage/scratch, simulator versions and executable paths.
+4. Record WSL distribution and path mappings only when WSL is used.
+5. Record pseudopotential source, licence, functional, hashes, and recommended cutoffs.
+6. Set explicit concurrency, wall-time, warning, retry, download, and unattended-execution policy.
+7. Run package unit tests and tiny simulator smoke tests.
+
+Portable standing defaults supplied by USER.md:
+- 120 wall-clock hours per question; warning at 96 hours.
+- At most 16 simulator processes system-wide.
+- Preserve at least 4 GiB available RAM.
+- Up to three diagnosed attempts per stage.
+- Copy every simulation artifact to the configured user-visible directory.
+
+These are upper bounds, not promises that a calculation is safe or scientifically meaningful. Use stricter local/institutional limits when applicable. Detection never grants permission to execute.

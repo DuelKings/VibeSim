@@ -1,0 +1,53 @@
+# OpenClaw private/runtime data
+USER.md
+!/USER.md
+MEMORY.md
+memory/
+.openclaw/
+*.token
+*.secret
+.env
+.env.*
+
+# Simulator scratch and large intermediates
+scratch/
+*.save/
+*.wfc*
+*.tmp
+*.gbw
+*.densities
+*.hess
+*.engrad
+*.cube
+*.chg
+*.restart*
+
+
+# Preserve selected evidence bundled in published examples
+!examples/**/*.gbw
+!examples/**/*.densities
+!examples/**/*.hess
+!examples/**/*.engrad
+
+# Archives/installers
+*.zip
+*.tar
+*.tar.gz
+*.tar.xz
+*.7z
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local machine configuration and detection
+config/machine.local.json
+simulation_agent_v1.0.0/config/detected/*
+!simulation_agent_v1.0.0/config/detected/.gitkeep

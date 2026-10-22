@@ -1,0 +1,86 @@
+AGENTIC SIMULATION KNOWLEDGE BASE — 01 QUANTUM ESPRESSO (QE)
+Applies to periodic inorganic crystals, slabs, interfaces, surfaces and BO-AIMD. Verify installed pw.x version and pseudopotential details. Replace EVERY <PLACEHOLDER> before execution. Example numeric values are STARTING GUESSES ONLY, NOT validated production values.
+
+A. PREPARE CRYSTAL STRUCTURE
+Input: CIF/POSCAR/XYZ+cell or formula+KNOWN polymorph and source; validate lattice vectors, atomic coordinates, units, composition, oxidation/spin hypothesis, symmetry, fractional/cartesian mapping and minimum atom separation. Do not infer an unknown polymorph from a formula. A geometry optimizer requires an initial geometry. Convert structure by dedicated utility (ASE/pymatgen). Record whether atoms/cell fixed; default fixed-cell relax for known experimental lattice and vc-relax for unconstrained predicted bulk if appropriate. Surfaces require Miller plane, termination, slab thickness, vacuum, passivation, coverage, adsorbate binding site and layer constraints.
+
+B. PSEUDOPOTENTIALS AND NUMERICAL PREPARATION
+Use verified pseudopotential files matching actual element, valence, exchange-correlation and relativistic treatment (SSSP/PSlibrary/etc.); log URLs, checksum, valence, recommended ecutwfc and ecutrho. Never fabricate file names. USPP/PAW typically need larger ecutrho/ecutwfc than norm-conserving, but actual ratio comes from pseudo tests. Cutoff and k-grid converge against energy DIFFERENCES, forces and stress for the property in question; metals may need tighter integration and denser grids. Do not blindly mix PP families or XC functionals.
+PBC settings: 3D bulk k mesh e.g. 4x4x4 only a pilot; slabs e.g. 4x4x1 after coverage-specific convergence; supercells may use gamma only only after testing. For metal occupations='smearing', choose documented smearing and degauss (Ry), test width. Insulators occupations='fixed' if electronic condition permits. Spin: nspin=2 and starting_magnetization(index) for collinear tests, compare physically plausible orderings. For SOC/noncollinear use validated fully relativistic pseudo and dedicated setup. DFT+U requires scientifically justified, version-compatible Hubbard input and documented U parameters; cannot invent them.
+
+C. TEMPLATE: PERIODIC FIXED-CELL RELAX (pw.x)
+Save as relax.in (NO literal <...> allowed). For an example nonmagnetic insulator:
+&CONTROL
+ calculation='relax', prefix='<PREFIX>', pseudo_dir='<PSEUDO_DIR>', outdir='<SCRATCH>',
+ tstress=.true., tprnfor=.true., nstep=100,
+/
+&SYSTEM
+ ibrav=0, nat=<NAT>, ntyp=<NTYP>, ecutwfc=<TESTED_RY>, ecutrho=<TESTED_RY>,
+ occupations='fixed',
+/
+&ELECTRONS
+ conv_thr=1.0d-8, electron_maxstep=150, mixing_beta=0.3,
+/
+&IONS
+ ion_dynamics='bfgs',
+/
+ATOMIC_SPECIES
+ <ELEMENT> <MASS_AMU> <VERIFIED_PSEUDO_UPF>
+ATOMIC_POSITIONS angstrom
+ <ELEMENT> <X> <Y> <Z> [OPTIONAL_IF_POS(1) IF_POS(2) IF_POS(3)]
+K_POINTS automatic
+ <K1> <K2> <K3> 0 0 0
+CELL_PARAMETERS angstrom
+ <AX> <AY> <AZ>
+ <BX> <BY> <BZ>
+ <CX> <CY> <CZ>
+Notes: nat/ntyp/count, species and pseudo paths must match; ionic force acceptance based on forc_conv_thr (Ry/Bohr) set where needed; check optional constraints are legal. For slab fixed cell never allow vacuum axis to shrink.
+
+D. TEMPLATE: VC-RELAX BULK
+Modify calculation='vc-relax'; add &CELL press=0.0, press_conv_thr=<KBAR_THRESHOLD>, cell_dynamics='bfgs' / ; keep &IONS BFGS and stress. Pressure units kbar. Validate free bulk degrees of freedom; preserve intended phase/symmetry constraints. Do not vc-relax vacuum slab in all axes. Post-relax conduct SCF with FINAL lattice and converged settings.
+
+E. TEMPLATE: STATIC SCF AFTER RELAX
+Modify calculation='scf', remove &IONS / &CELL; use final relaxed positions/cell from parser and same PP/XC and tested cutoffs; test denser k mesh than pre-relax where warranted. Check total energy, Fermi level (metal), magnetization, SCF convergence, electronic occupations. Need comparable geometries for energy differences.
+
+F. BAND STRUCTURE / DOS
+SCF on converged mesh -> 'bands' on defined high-symmetry line K_POINTS crystal_b or similar (version-check) -> bands.x, plot bands with correct units/Fermi or VBM alignment. For DOS: SCF -> NSCF dense uniform k mesh with enough nbnd -> dos.x/projwfc.x if site/projected DOS desired. A high-symmetry line alone may miss CBM/VBM; for numerical gap use sufficiently sampled uniform k points plus band-edge checks; distinguish direct/indirect gap. DFT Kohn-Sham gap != optical gap and semilocal XC typically underestimates. For hybrid/GW or SOC demand dedicated validated recipe and resource approval.
+BANDS control excerpt (only if valid for version):
+&CONTROL calculation='bands', prefix='<PREFIX>', outdir='<SCRATCH>', pseudo_dir='<PSEUDO_DIR>' /
+&SYSTEM ibrav=0, nat=<NAT>, ntyp=<NTYP>, ecutwfc=<TESTED_RY>, ecutrho=<TESTED_RY>, nbnd=<ENOUGH_BANDS> /
+&ELECTRONS conv_thr=1.0d-8 /
+... ATOMIC_SPECIES, ATOMIC_POSITIONS, CELL_PARAMETERS ...
+K_POINTS crystal_b
+ <N_SEGMENT_NODES>
+ <KX> <KY> <KZ> <POINT_WEIGHT_OR_SEGMENT_COUNT>
+
+G. AIMD (pw.x BO MOLECULAR DYNAMICS)
+Preconditions: equilibrated/reasonable relaxed structure; validate force/energy SCF settings, ensemble, thermostat implementation, time step and thermostat parameters; start with a VERY SHORT pilot; production needs approval. QE pw.x ionic MD uses 'md'; trajectory MD is not automatically reactive-chemistry sampling or kinetic proof. Units: pw.x dt = RYDBERG atomic time units, 1 unit ~0.048378 fs (NOT 1 fs). Example dt=20 is ~0.968 fs, but 0.5–1 fs may be too large for light atoms / high-frequency H motion; test drift and stability. nstep times dt gives simulated duration; NOT wall clock.
+BO-AIMD NVE-like pilot structure:
+&CONTROL calculation='md', prefix='<PREFIX>', pseudo_dir='<PSEUDO_DIR>', outdir='<SCRATCH>', nstep=<PILOT_STEPS>, dt=<RY_ATOMIC_TIME>, tprnfor=.true., /
+&SYSTEM ibrav=0, nat=<NAT>, ntyp=<NTYP>, ecutwfc=<TESTED_RY>, ecutrho=<TESTED_RY>, occupations='fixed', /
+&ELECTRONS conv_thr=1.0d-8, electron_maxstep=150, mixing_beta=0.3, /
+&IONS ion_dynamics='verlet', tempw=<INITIAL_TEMP_K> /
+... geometry, species, k-points, cell ...
+NVT control is VERSION-SPECIFIC: select and validate a supported thermostat (e.g., documented tempw/ion_temperature and rescaling options) with installed INPUT_PW; do not insert thermostat keyword guessed from another MD engine. Inspect instantaneous temperature, total energy drift where NVE applies, bond jumps, pressure/volume if used, SCF iteration and failed steps. Require adequate thermalization and independent trajectories for statistics; in MD a rare event NOT observed is not proof it cannot occur. Converge MD cell, cutoff, functional and trajectory length appropriate to conclusions.
+
+H. ADSORPTION MODEL
+Construct clean slab, isolated adsorbate reference (molecule gas cell or compatible reference), combined slab+adsorbate in SAME slab cell, relax interface with bottom layers often constrained. Align XC, cutoffs, spin, dispersion, pseudo and numerical precision; converge vacuum/slab thickness/k/coverage/site. Adsorption E = E_slab+ads - E_clean_slab - E_isolated_ads ; negative generally favorable. Check counterpoise unnecessary for plane-wave basis in usual practice but finite-size/image and reference errors remain. Charged slabs, aqueous electrochemical potential, surface reconstructions require specialist settings. Adsorption site search is not inferred from one starting geometry.
+
+I. BOND CLEAVAGE / REACTIONS
+Static scan (fixed selected interatomic coordinate, optimize other atoms where physically appropriate), multiple spin/charge states, inspect changes in bonding; barrier requires NEB and saddle verification not plain distance scan. QE neb.x separate utility/process; build consistent endpoints and intermediate images, validate optimizer and reaction coordinate; get explicit approval if large. For gas-phase H2 prefer ORCA or suitable molecular electronic-structure code rather than large periodic supercell unless specifically comparing periodic methods.
+
+J. OPERATIONAL COMMANDS
+Example: pw.x -in relax.in > relax.out (MPI invocation only as allowed by cluster launcher); follow with parsing. Check 'JOB DONE.' AND convergence metadata. Work in unique stage directories; outdir/prefix consistency required for restarts and postprocessing. QE provides pp.x, projwfc.x, dos.x, bands.x, neb.x separately; availability must be checked. Do not remove checkpoint files before dependent stages complete.
+
+K. ERROR TRIAGE / EXIT CRITERIA
+SCF oscillation -> check occupations, pseudo, geometry, spin initialization, metallic smearing, mixing_beta; don't randomly disable convergence. Ionic oscillation -> check step size, constraints, stress, unphysical initial geometry; restart from last good structure only. Out-of-memory -> reduce concurrency/parallelization, increase resources only within gate. Missing PP -> block, do not swap to arbitrary species. NaN/exploding energy -> stop. Validation: final force below declared bound, residual stress/cell criteria if vc, cutoff/k convergence for target, plausible structure, no unintentional symmetry/spin flips; monitor run/SCF completed and energy/forces successfully parsed.
+
+L. PARAMETER OPTIONS MATRIX
+calculation: scf / relax / vc-relax / nscf / bands / md / vc-md (specialist).
+Geometry: fixed atoms, constrained lower slab layers, cell locked, variable cell, external pressure, solvent/environment (specialist).
+Electronic: occupations fixed/smearing, nspin, magnetic order, SOC, DFT+U, XC, van der Waals treatment, charge corrections, metallic/insulating.
+Numerics: ecutwfc/ecutrho, FFT grids, k sampling/offsets, degauss, conv_thr, electron_maxstep, mixing_beta, nbnd, forc_conv_thr, etot_conv_thr.
+Dynamics: ionic integrator, dt in Rydberg a.u., tempw, thermostat, nstep, printing and restart controls.
+Do not use values from a sample without context-dependent tests.
+
+Official refs: https://www.quantum-espresso.org/Doc/INPUT_PW.html ; https://www.quantum-espresso.org/Doc/pw_user_guide/node11.html ; https://www.quantum-espresso.org/Doc/pw_user_guide/node10.html

@@ -1,0 +1,24 @@
+{
+  "species": {
+    "biphenyl": {
+      "energy_Eh": -463.185838303688,
+      "enthalpy_Eh": -462.99519143,
+      "normal": true,
+      "opt_converged": true,
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_s": 435.0802638530731
+    },
+    "phenyl": {
+      "energy_Eh": -231.502175845309,
+      "enthalpy_Eh": -231.40979901,
+      "normal": true,
+      "opt_converged": true,
+      "status": "completed",
+      "exit_code": 0,
+      "elapsed_s": 144.70551943778992
+    }
+  },
+  "De_kJ_mol": 476.4930371856563,
+  "deltaH298_kJ_mol": 461.02043464998405
+}

@@ -1,0 +1,67 @@
+AGENTIC SIMULATION KNOWLEDGE BASE — 00 ROUTER AND GENERAL WORKFLOW
+Version 2.0 | 2026-10-21 | Scope: QE inorganic periodic; ORCA organic molecular; xTB/CREST conformers.
+Status: ADVISORY reference; never override the active scientific question, software manuals, institution scheduler policy, or 06 guardrails.
+Read alongside: 01_QE.txt 02_ORCA.txt 03_XTB_CREST.txt 04_PROPERTY_RECIPES.txt 05_ASSUMPTIONS_AND_RESULTS.txt 06_SCOPE_GUARDRAILS.txt
+
+0. PRIORITIES / OUTPUT CONTRACT
+Priority: user's explicitly stated scientific constraints > physical/electronic validity > active safety/resource policy > tool compatibility > documented defaults. If user asks for an invalid protocol, explain and offer an alternative. Never claim experimental kinetics, accurate optical gaps, or chemical mechanism from a single electronic energy point.
+Every task yields: (a) question rephrased into observable/quantity, (b) structure/provenance, (c) chemistry and charge/spin/periodicity, (d) proposed method and alternatives, (e) assumptions stated explicitly, (f) cost estimate and permission status, (g) file manifest and command, (h) validator and pass/fail criteria, (i) result with units/limitations, (j) reproducibility metadata.
+Status enums: PLANNED / BLOCKED_MISSING_INPUT / APPROVAL_REQUIRED / PILOT / RUNNING / VALIDATION_FAILED / COMPLETED_SCREENING / COMPLETED_VALIDATED / INCONCLUSIVE.
+
+1. PARSE THE USER QUESTION
+Identify objective: geometry minimum, structure prediction, relative stability, adsorption ENERGY vs adsorption RATE, band gap, orbital energies, cleavage profile, binding/intermolecular interaction, thermodynamics, finite-temperature dynamics, reaction barrier, diffusion.
+Identify entity: isolated molecule, ion, molecular pair, crystal, surface, slab+adsorbate, interface, solvated species, polymer/cluster. Record composition, coordinates or generated structure, net charge, spin state/multiplicity, periodicity, pressure, temperature, environment, requested accuracy and evidence required.
+A question alone might omit coordinates; construct using structure parser and reliable canonical structure if unique, flag stereochemistry/tautomer/protonation and avoid fabricating unknown solid phase/surface orientation. If no structure can be identified, stop for essential structure.
+
+2. SELECT APPROPRIATE SOFTWARE / ROUTE
+- Inorganic periodic solid, surface, slab, interface: QE pw.x for SCF, fixed-cell relax, vc-relax, bands, DOS and BO-AIMD.
+- Isolated organic molecule (closed-/open-shell): ORCA DFT for geometry, vibrational Hessian/frequencies, electronic properties, higher-level single-point.
+- Flexible isolated organic molecule: xTB optimize -> CREST conformers -> dedup/clustering -> shortlist -> ORCA optimize/frequencies/single points.
+- Molecular adsorption on inorganic slab: QE slab+adsorbate for adsorption energy. xTB/ORCA may prescreen ISOLATED adsorbate conformers, but cannot substitute for periodic interface energy.
+- Inorganic molecular ions, transition-metal molecular complexes, organic crystals, periodic molecular solids: classification is not purely 'organic/inorganic'. Select periodicity, electronic complexity, and physical observable; QE for periodic crystals; ORCA for molecular clusters/complexes with validated methods. Warn when outside validated routing.
+- Organic AIMD not in default autonomous coverage; if periodic liquid/polymer and QE requested, require separate validated setup and approval. ORCA MD not assumed available.
+- Rates and barriers are not inferred from static binding energies; see 04 and 06.
+
+3. SCIENTIFIC LEVELS
+L0 feasibility: validate structure/units/electron count/programs and estimates, no expensive production.
+L1 rapid screening: lower-cost physically sensible method, coarse convergence checks, not publication-grade.
+L2 validated calculation: converged numerical settings, candidate/spin sampling, appropriate controls and uncertainty.
+L3 production/scientific claim: cross-check functional, sampling, finite size, phase or experimental evidence as appropriate; explicit approval when expensive.
+
+4. PLAN A DIRECTED ACYCLIC WORKFLOW (NOT UNBOUNDED RECURSION)
+INTAKE -> CHEMISTRY_CHECK -> ROUTE -> GEOMETRY_GENERATION -> SCOPE_GATE -> INPUT_GENERATION -> STATIC_LINT -> TINY_PILOT -> COST_UPDATE -> OPT/SCF/CONFORMER -> PROPERTY_POSTPROCESS -> CONVERGENCE_CHECK -> INTERPRET -> REPORT.
+Each run stage must have named dependencies, immutable input snapshots, work directory, timeout, expected outputs, and acceptance criteria. Never overwrite an existing completed run. Use staged job folders 00_input 01_pilot 02_relax 03_scf 04_property 05_validate; stable hashes in filenames or metadata.
+
+5. GAPS / ASSUMPTION POLICY
+AUTO-FILL LOW-RISK: units, default output filenames, computational directory names, initial cheap optimizer, provisional numerical convergence seeds, modest core allocation within budget, vacuum for isolated molecules, standard gas-phase electronic calculation when solvent unspecified (must disclose).
+AUTO-FILL WITH WARNING: approximate structure generation from unambiguous SMILES, preliminary functional/basis/pseudopotential selection, spin guess and magnetic ordering trials, protonation/tautomer default if scientifically plausible; these may materially change result. Distinguish hypothesis from known fact.
+STOP OR REQUEST USER CHOICE: unspecified chemical identity; ambiguous adsorption surface/site when comparing adsorption; major ambiguity in charge/multiplicity; user asks for 'rate' without temperature/mechanism/time or adequate model; impossible reliability target; unsupported elements or pseudo; unbounded budget; reaction products not defined; safety/permissible resource concerns.
+Assumption ledger fields: id, category, value, basis, alternatives, sensitivity, verification, user_visible=true. Preserve user values unchanged; never substitute secretly.
+
+6. PRE-RUN SCIENCE CHECKS
+Chemistry: atom types, count, coordinates, no impossible overlaps, electron parity vs charge/multiplicity, oxidation/spin (when applicable), molecular connectivity, stereochemistry, possible proton transfer. PBC: lattice determinant >0, density sensible, slab vacuum along correct axis and dipole effects, adsorption images sufficiently separated, surface layers frozen where appropriate. Compare consistent reference cells, stoichiometry, coverage, XC, pseudopotentials, cutoffs and k sampling.
+Numerics: chosen method supports chemical elements and spin; verify software version and exact syntax; no guessed pseudopotential filenames; electron and wavefunction cutoffs converged (QE); basis/grid/integration and SCF tolerance appropriate (ORCA); solvent settings explicit; output paths writable; quota remaining.
+Pilot: measure actual SCF effort, memory, disk, wall clock. Estimate complete job using actual timings and uncertainty; rerun scope gate.
+
+7. EXECUTION / MONITORING
+Use safe argument-array subprocess invocation (do not interpolate untrusted shell strings), restrict directories, bound CPU/thread count, configure scratch, log stdout/stderr and exit code. Running a tool requires installed executable, licensed access if required, resources and user authorization. Use checkpointed restarts only after confirming program-specific restart completeness and input compatibility. Repeated failures stop after capped retries; no indefinite parameter cycling.
+Validate convergence scientifically, not exit code only: QE JOB DONE plus self-consistency and final force/cell state; ORCA normal termination + optimization converged + frequency minima when claimed; xTB normal completion and molecule preserved; CREST search completed, duplicates and conformer count checked. Identify silent failure (wrong dissociation state, imaginary mode, changed protonation, irreversible restructuring).
+
+8. POSTPROCESS AND REPORT
+Energies with exact convention, sign, reference geometry, Hartree/Ry/eV/kJ mol-1; state whether zero point/thermal/solvent/entropy added. Periodic orbital gap = VBM-CBM along sampled k-mesh, not automatically optical/fundamental quasiparticle gap; molecular HOMO-LUMO is Kohn-Sham orbital difference, not guaranteed excitation energy. Adsorption E = E(surface+adsorbate) - E(surface) - E(adsorbate) (negative exothermic under this convention). Rates require activation free energies and rate theory or adequately sampled trajectory events.
+Always disclose method sensitivity, convergence, sampling uncertainty, approximate nature. Save input, output, structure, parsed data, manifest, checksums, plots (if requested), and a machine-readable assumption ledger.
+
+9. REGRESSION TEST CASES FOR AGENT
+A 'Relax benzene' -> xTB geometry (optional) then ORCA optimization, charge 0 singlet, gas phase assumed, harmonic frequency validation if claim stable minimum.
+B 'Band gap of silicon' -> periodic Si known structure required, QE vc-relax optional if lattice not fixed -> SCF -> NSCF/bands -> extract gap; advise semilocal underestimate.
+C 'Adsorption rate of CO on Pt(111)' -> identify kinetic barrier, temperature, sites and conditions; QE energetics first; NEB or reaction dynamics requires separate workflow and approval; E_ads alone not rate.
+D 'Break H-H bond' -> isolated H2 distance scan, correct singlet-to-dissociation treatment, avoid false closed-shell restricted-DFT asymptote; compare open-shell/spin symmetry & suitable multireference; a series of SCF energies is PES, not rate.
+E '20 conformers of a druglike molecule' -> xTB/CREST -> shortlist -> ORCA; budget on attempted conformer count, no exhaustive-completeness claim.
+
+10. REFERENCES (CHECK INSTALLED VERSION)
+QE: https://www.quantum-espresso.org/Doc/INPUT_PW.html ; https://www.quantum-espresso.org/Doc/pw_user_guide/
+ORCA: https://orca-manual.mpi-muelheim.mpg.de/contents/essentialelements/basics.html ; https://orca-manual.mpi-muelheim.mpg.de/contents/structurereactivity/optimizations.html
+CREST: https://crest-lab.github.io/crest-docs/page/documentation/keywords.html
+
+PROJECT IMPLEMENTATION ADDENDUM v1.0.0:
+Before routing any proposed execution read README.md, verify config/detected/detected_environment.json was generated on the intended Windows/WSL execution host, and read 07_MACHINE_AND_UTILS_METADATA.txt. Detect hardware and tools through initialize.py. Do not confuse a known executable path with permission to launch. Prefer existing tested Python utilities for numerical calculations and parse output from actual runs. Unsupported features in the README must be surfaced as missing capabilities, not silently simulated in prose.

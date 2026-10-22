@@ -1,0 +1,69 @@
+AGENTIC SIMULATION KNOWLEDGE BASE — 04 QUESTION-TO-SIMULATION RECIPES
+All recipes inherit 00 workflow, 05 output contracts and 06 guardrails. Required structures, thermodynamic states and methods must be identified. 'Organic vs inorganic' is not the sole distinction: molecular vs periodic modeling and mechanism are often the decisive distinction.
+
+RECIPE 01 — RELAXATION / GEOMETRY OPTIMIZATION
+Question forms: 'relax molecule/crystal', 'find stable structure', 'minimize energy'.
+Quantity: local potential-energy minimum given a specified charge, cell/boundary condition, functional and constraints; NOT proof of global minimum.
+Organic molecule: build initial 3D coordinates, identify Q/M/stereo, xTB optimize; CREST if flexible and lowest-energy conformer matters; ORCA Opt at chosen DFT level; Freq to verify local minimum if stability requested. Return optimized XYZ, final energy, RMS gradient/frequency outcome and conformer selection.
+Inorganic crystal: identify specific polymorph/CIF and intended phase; QE relax positions at fixed cell if lattice externally fixed; vc-relax if appropriate bulk lattice permitted to change. Converge plane-wave cutoff/k sampling and force/stress. For slabs preserve vacuum and usually fix bottom layers; report lattice/volume and symmetry changes.
+Stop: no initial structural definition; invalid charge/spin; severe overlap/reconstruction; nonconvergence; unsupported pseudopotential.
+
+RECIPE 02 — BAND GAP (PERIODIC ELECTRONIC STRUCTURE)
+Question: 'What is silicon bandgap?' or 'electronic band structure'.
+Periodic inorganic/organic crystal: QE relax (optional) -> converged SCF -> NSCF dense grid for extrema plus high-symmetry bands path for visualization -> locate VBM and CBM with k points, direct/indirect type, gap in eV. Metals may have zero or overlapping band gap. Semilocal Kohn-Sham gaps are not quasiparticle gaps; GW/hybrid beyond baseline, expensive. Must check magnetic order, SOC, dispersion, cell, functional and k mesh.
+Isolated organic molecule: there is no bulk band gap; ORCA HOMO-LUMO molecular orbital gap, fundamental gap (IP-EA) or optical excitation are DIFFERENT properties. Ask or state the chosen proxy. Molecular organic crystals: periodic QE, not isolated molecule ORCA if aiming for solid-state band gap.
+Mandatory clarification for user asking 'optical band gap' while requesting just DFT: offer approximate electronic gap vs dedicated excited-state methods.
+
+RECIPE 03 — HOMO / LUMO / MO GAP
+Question: HOMO, LUMO, frontier molecular orbitals.
+Organic isolated molecule: xTB conformation search if flexible -> ORCA DFT optimization, SCF -> parse occupied/unoccupied orbital eigenvalues with spins; gap = E_LUMO-E_HOMO. Report energy in eV, Q, M, geometry, solvent, functional/basis, spin-specific alpha/beta data. xTB orbital values are screening descriptors, not DFT-validated observables. If excitations asked, use TDDFT; IP/EA use separate ΔSCF states.
+Inorganic periodic: HOMO/LUMO is not generally the conventional bulk metric: compute valence/conduction band edge, Fermi level, DOS/band gap with QE. For finite inorganic cluster ORCA molecular orbitals may be appropriate.
+Stop/warn: fractional occupations metallic materials, open-shell ambiguous labeling, defect states, severe self-interaction or wrong reference alignment.
+
+RECIPE 04 — ADSORPTION ENERGY (NOT RATE)
+Question: 'How strongly does CO bind to Pt(111)?', 'adsorption strength'.
+Primary formula: E_ads=E(surface+adsorbate)-E(surface)-E(gas adsorbate), negative = exothermic adsorption for given references. Alternative sign convention E_binding=-E_ads, label explicitly. If molecule dissociates or surface stoichiometry changes, write balanced stoichiometric equation and chemical-potential references instead. Binding energies for molecular pairs below.
+Inorganic periodic slab (e.g. Pt): QE clean slab optimize/reference -> independently optimized molecule/reference (compatible method) -> build multiple surface adsorption sites/orientations -> QE relax adsorbed slabs -> SCF energies -> finite-size, coverage, layers, vacuum, k/cutoff, spin, dispersion, dipole, charged-slab corrections as needed. Constrain lower layers and document coverage. Adsorption thermodynamics at T,p uses chemical potentials, ZPE/entropy, possible solvation, not raw E_ads.
+Organic surface: if an organic *molecule* on solid surface, still QE periodic slab. If organic molecule binds noncovalently to another organic molecule in gas/solution, ORCA cluster interaction/binding protocol, check conformers and BSSE/solvent. Organic molecular crystals on surfaces are periodic phenomena.
+Outputs: all three energy references and geometries, chosen site/coverage, energy vs site, uncertainty; no rate.
+
+RECIPE 05 — ADSORPTION RATE / DESORPTION RATE / UPTAKE KINETICS
+Question: 'adsorption rate', 'sticking coefficient', 'how fast binds'.
+A single relaxation, E_ads or even one finite AIMD trajectory CANNOT yield a general adsorption rate. Must distinguish: sticking probability per collision, adsorption flux molecules/(area*time), rate constant (units depend on kinetic law), equilibrium uptake/time, surface reaction rate, diffusion-limited sorption.
+Required: surface/site, gas or liquid conditions, T, partial pressure/concentration, coverage, mechanism, activation barrier and prefactor or validated kinetic/transport model. For activated surface adsorption: QE energetics plus reaction-path barrier via NEB (separate validated template), thermochemical corrections and transition-state theory when applicable; multiply collision flux by sticking coefficient for gas adsorption; microkinetics/kMC may be needed for coverage dependence. Barrierless molecular sticking may demand properly sampled dynamics, not only static NEB. For adsorption into a porous organic material/polymer, force-field/MD/GCMC or mass-transfer/diffusion model may be more appropriate than small-cell DFT.
+Default safe result absent kinetics info: offer adsorption ENERGY only as a screening proxy, explicitly say does not answer requested RATE; mark BLOCKED_MISSING_INPUT or propose bounded staged plan. Require approval for rate-quality workflow.
+
+RECIPE 06 — BINDING ENERGY / INTERACTION ENERGY
+Question: 'binding energy' for complex AB or ligand-host.
+Define E_bind = E_AB - (E_A+E_B), negative favorable; note positive binding energy conventions elsewhere. For isolated organic supramolecular complex: ORCA compute multiple poses + fragment energies, basis/dispersion, counterpoise if appropriate; distinguish frozen-fragment interaction energy vs fully relaxed binding energy (deformation included). For inorganic bulk/defect/interface: QE formation/association energy via balanced reference species, chosen stoichiometry, charge states and chemical potentials. For organic molecule adsorbing on solid use adsorption protocol not isolated cluster unless explicitly finite cluster model.
+Bond dissociation energy: E(products)-E(reactant) with correct fragment spin states, ZPE and enthalpy if requested; not the same as a kinetic barrier.
+Stop: missing products, ambiguity about what 'binding' objects are, inconsistent charge/stoichiometry.
+
+RECIPE 07 — BOND BREAKING / BOND DISSOCIATION CURVE
+Question: 'what happens if I pull an H-H bond apart?'
+1 identify cleavage type homolysis vs heterolysis and molecular charge/spin states; 2 choose reaction coordinate R and physically meaningful fragment states; 3 generate series of geometries (H2 example: H-H distance 0.5 to 5 Å with dense points around equilibrium and dissociation region); 4 ORCA fixed-geometry SP at each distance or constrained relaxation orthogonal to coordinate for larger molecule; 5 plot E(R)-E(reference); 6 independently calculate dissociation products consistent with electronic states; 7 test strong correlation and spin restrictions. DFT restricted closed-shell can give wrong dissociation asymptote for H2; unrestricted broken-symmetry may yield spin-contaminated solutions. For accurate H2 PEC, suitable wavefunction/multireference treatment may be needed (e.g. small-system FCI with adequate basis); not all ORCA installations/workflows make these methods available. xTB scan only screening. Different conformational pathways possible in organics.
+Inorganic/periodic: choose bond in crystal/surface and whether adiabatic cleavage leads to defects/desorption; QE constrained displacement/relaxation and NEB if seeking energy barrier. Surface bond cleavage creates finite-size image and charge/spin issues, use cell convergence. For small inorganic gas molecule, ORCA generally better than vacuum QE.
+Outputs: distances Å, energies eV or Hartree, proper reference asymptote, force where available, sampled states, ground-state branch assumptions. NEVER call PES slope a rate constant; static scans do not include entropic kinetics.
+
+RECIPE 08 — ACTIVATION ENERGY / REACTION BARRIER
+Reactant and product atom-balanced, same total charge/electron count for direct adiabatic path; choose relevant surface/spin states. Molecular organic: ORCA TS optimization/frequency (one imaginary mode with intended reaction coordinate) and connectivity validation (IRC where available), conformers and thermal effects. Periodic inorganic: QE NEB via neb.x with relaxed endpoints and images, convergence/tangent/check barrier; missing saddle or unphysical interpolation invalidates. Barrier ΔE‡ or ΔG‡, not E_bind. Chemical rates require validated prefactor, temperature and kinetics regime. Escalate if unknown mechanism/multiple pathways.
+
+RECIPE 09 — FORMATION ENERGY / DEFECT ENERGY
+Inorganic: chemical-potential reservoir choice critical. E_form(defect,q)=E_defect(q)-E_bulk-Σn_i μ_i+q(E_F+reference)+E_corr (sign convention of n_i must be specified); align electrostatic potential, supercell sizes, charge corrections, magnetism, band edges, μ bounds. Not autonomous without declared defect and μ regime. Organic: analogous reaction enthalpies/formation with gas/solvation correction, ORCA balanced species; do not substitute total molecule energy for formation energy.
+
+RECIPE 10 — FINITE TEMPERATURE / AIMD / DIFFUSION
+Inorganic QE Born-Oppenheimer MD: state ensemble NVE/NVT/etc, T, pressure, dt (~0.5–1 fs only an initial light-atom-dependent pilot), simulation length, equilibration, independent replicas, cell/functional, compute RDF/MSD/diffusion only after sufficient sampling; short AIMD rarely resolves slow rare events. Organic isolated conformational dynamics: xTB/CREST approximate sampling, not production physical time evolution; reactive AIMD beyond defaults and requires explicit specialist route. Diffusion D from long-time linear MSD/(2d t) in unwrapped coordinates and appropriate regime, not from a short drift.
+
+RECIPE 11 — MOLECULAR CONFORMER RANKING
+Organic: build stereochemically specified molecule, xTB opt -> CREST or RDKit+xtb conformer search -> cluster -> shortlist -> ORCA DFT optimizations -> frequencies/solvent where needed. Inorganic: polymorphs, defects and adsorbate sites are structural configuration searches, not molecular torsional conformer search; QE separate candidate relaxations, budget and phase/composition controls. Global-minimum claims need broader evidence.
+
+RECIPE 12 — TOTAL ENERGY / SINGLE-POINT ENERGY
+Fixed geometry and electronic state only. Organic ORCA SP at specified charge/multiplicity/method; inorganic QE SCF with periodic cell/PP/XC/k points. Absolute total energy is method- and reference-dependent; comparing different composition, charge or different methods without balanced reaction is meaningless. If asked 'can I scan H2 by repeated SCFs?' yes, the fixed-geometry PES is well-defined within chosen electronic method, BUT spin state/dissociation correlation, charge, wavefunction symmetry and reference validation are essential.
+
+RECIPE 13 — COHESIVE ENERGY / LATTICE ENERGY
+Inorganic crystalline cohesive energy: per atom difference between crystal and appropriate isolated atoms with correct spin/atomic reference, beware PP and open-shell atom convergence, method-specific limitations. Molecular crystals lattice energy: periodic cell energy vs isolated molecules same method/reference and dispersion; intramolecular deformation vs intermolecular stabilization must be distinguished. Organic molecular cohesive energies from ORCA gas molecule alone do not capture crystal periodicity.
+
+RECIPE 14 — VIBRATIONS / STABILITY
+Organic ORCA Opt+Freq yields harmonic modes, ZPE and finite-T corrections, but check low-frequency and entropy treatment. Inorganic bulk phonons require QE phonon code ph.x/phonon dispersion and supercell or DFPT workflow, distinct from just relaxation; imaginary phonons may signal instability/numerical issues. These are not silently part of normal optimization.
+
+DEFAULT RESPONSE FOR ALL RECIPES: State exact metric, whether calculation is molecule or periodic, software, composition/state, geometry generation, assumptions, input settings and sensitivity, staged commands, validations, outputs, resource threshold and scientifically unsupported claims. Ask clarification only for decisions essential to physical meaning; otherwise do bounded screening with assumptions.

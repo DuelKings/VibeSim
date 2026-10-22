@@ -1,0 +1,18 @@
+AGENTIC SIMULATION: PSEUDOPOTENTIAL INVENTORY — PORTABLE TEMPLATE
+VERSION: 1.0.0
+
+No pseudopotential binaries or machine-specific inventory are distributed in this repository.
+
+For each local pseudopotential used, record:
+- element and exact basename
+- collection and release
+- source URL and redistribution licence
+- exchange-correlation functional
+- type (NC/USPP/PAW) and relativistic treatment
+- valence configuration when available
+- recommended wavefunction and charge-density cutoffs
+- SHA-256 hash
+- local path on the execution side
+- quarantine/rejection reason when unsuitable
+
+Use one physically consistent set for directly compared calculations. Never guess filenames or infer suitability from presence alone. Generate a local inventory with utils/pp_catalog_auditor.py and keep large/local manifests out of version control unless intentionally publishing a redistributable metadata-only record.

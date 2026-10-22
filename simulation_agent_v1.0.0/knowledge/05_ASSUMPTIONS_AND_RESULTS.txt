@@ -1,0 +1,54 @@
+AGENTIC SIMULATION KNOWLEDGE BASE — 05 ASSUMPTIONS, STATE, MANIFEST AND RESULT CONTRACT
+Purpose: permit reasonable gap-filling WITHOUT quietly changing the science. This is a plain-text schema specification; utility implementation is separate.
+
+A. ORDER OF DECISION MAKING
+1 Capture explicit user constraints verbatim (quantity, system, electronic state, T/P, environment, precision, budget).
+2 Enumerate inferred details and decision impacts; classify as low-risk administrative / reversible numerical pilot / scientifically material / essential unknown.
+3 Use conservative documented defaults for low-risk missing details; use screening defaults for reversible pilots only. For scientifically material assumptions, warn, bracket alternative hypotheses if cheap, otherwise block meaningful claim until user chooses.
+4 Never replace user-specified charge, multiplicity, phase, XC, precision or computer budget without their approval, even if not optimal.
+5 Record EVERY parameter, origin, rationale, uncertainty and sensitivity. Tool-generated defaults are also assumptions.
+
+B. INPUT / JOB SPEC EXAMPLE (JSON-LIKE FIELDS; VALUES ARE ILLUSTRATIVE)
+job_id: stable unique identifier
+question: natural-language question and precise scientific objective
+material: elemental identity/composition, geometry URI or SMILES/CIF, phase/stereochemistry, provenance
+model_type: finite_molecule | bulk_periodic | slab | cluster | molecular_crystal | solution_approx
+state: charge, multiplicity, collinear magnetism hypothesis, solvent, T, P, coverage, constraints
+property: energy | optimized_geometry | band_gap | frontier_orbitals | adsorption_energy | rate | etc.
+software: xtb | crest | orca | qe plus installed versions and executable paths
+method: functional, dispersion, basis or pseudos/checksums, k, cutoffs, SCF, geometry tolerances
+stages: ordered dependency graph, each [inputs, exact command argv, max runtime, resources, output paths, validation]
+assumptions: [{name, user_supplied:false, assumed_value, reason, alternatives, uncertainty, changed_science:true|false, disclosed:true}]
+permissions: approval status, cost estimate and upper quota, owner/time of approval if obtained
+validation: scientific numerical convergence checks and pass/fail observation
+results: extracted energies/units/structures/plots and confidence/limitations
+
+C. STANDARD ASSUMPTIONS EXAMPLES
+'Benzene geometry relaxation' -> molecule benzene C6H6; neutral singlet gas phase; xTB preliminary then ORCA r2SCAN-3c; user did not specify solvent/T; disclose that energies are approximate electronic ground-state values. Avoid pretending conformer search essential for rigid benzene.
+'Si band gap' -> cannot infer specific lattice constant but can use verified silicon diamond-CIF if sourced and disclose structure provenance; PBE/PBE-like is screening functional; resulting KS gap may underestimate experimental band gap; include direct vs indirect and k sampling.
+'CO adsorbs on Pt' -> face unspecified: Pt(111) is a possible illustrative model but NOT uniquely implied; different facets/sites could change value. If a useful low-cost pilot is explicitly allowed, label assumed Pt(111) screening model, not universal Pt adsorption.
+'Break H2 molecule' -> define homolytic neutral singlet H2 ground-state path, distances, electronic structure limits; do not use restricted closed-shell DFT uncritically at large separation.
+'AIMD 300 K' -> temperature alone doesn't specify ensemble, duration, timestep or system. If no duration and budget, propose a bounded benchmark only; do not claim equilibrium or diffusion from it.
+
+D. VALIDATOR RESULT FIELDS (EACH STAGE)
+stage_id, command, input_hash, output_hash, return_code, software_version, hostname or environment, allocated_cores, allocated_memory, measured_wall_s, measured_core_h, peak_mem_gb, output_disk_gb, convergence_marker, parsed_energy_value, energy_unit, geometry_path, max_force, stress, electron_count, spin_state, chemistry_valid, scientifically_valid, stop_reason.
+Distinguish 'program terminated successfully' from 'physics validated'. Missing metrics are null/unknown, NEVER replaced with zero.
+
+E. UNITS AND METADATA
+Store canonical values with source units: length Å (plus bohr conversion when relevant), energy eV and native Eh or Ry, temperature K, pressure bar/kbar (QE press in kbar), time fs/ps and QE MD dt native Rydberg atomic time, force eV/Å plus QE Ry/Bohr. Conversion utilities must be tested, not guessed. Per-molecule vs per-formula-unit vs per-atom reference must be unambiguous. Energy signs for binding/adsorption always defined.
+
+F. REPORT TEMPLATE
+TITLE / ANSWER IN ONE SENTENCE / CAN WE ANSWER THIS FROM THESE METHODS? / INPUTS FROM USER / EXPLICIT ASSUMPTIONS / SOFTWARE ROUTE + JUSTIFICATION / STAGES (pilot, production, validation) / EXACT SETTINGS AND CHOICES / COST + APPROVAL / RESULTS TABLE / QC TESTS / SCIENTIFIC LIMITATIONS / ARTIFACT MANIFEST / RECOMMENDED HIGHER FIDELITY.
+If a requested claim is not possible, use INCONCLUSIVE and explain missing experiment/physics model, not fabricated numerical result.
+
+G. COMPLETION GATES
+SCREENING: parsed files, plausible chemistry, normal tool termination, local numerical convergence adequate for triage, assumptions visible.
+VALIDATED: numerical convergence for claimed observable plus relevant structure/spin/site/conformer alternatives, correct reference cycles, acceptable sampling uncertainty. A stable optimization alone does not validate a rate, optical gap or global minimum.
+
+H. USER-AUTHORIZED DEFAULTS FOR UNDER-SPECIFIED JOBS (2026-10-22)
+1 If the physical environment is genuinely unspecified, use vacuum. Do not apply vacuum when the prompt explicitly or chemically requires aqueous solution, another solvent, a bulk phase, a surface environment, pressure, or an interface.
+2 If temperature is unspecified, use room temperature = 298.15 K and disclose it.
+3 For activation questions, attempt both (a) a validated elementary transition-state free-energy barrier and (b) an apparent Arrhenius activation energy when both are scientifically definable. A valid TS requires the correct imaginary mode and demonstrated endpoint connectivity/IRC. An apparent Arrhenius Ea requires a stated kinetic model and temperature-dependent rate data; never infer it from endpoints or relabel a single electronic barrier.
+4 Use AIMD as pathway exploration when appropriate. AIMD does not by itself prove the globally most stable pathway: convert candidates into stationary points/TSs and validate connectivity and sampling. Warn the user before projected computational load becomes excessive, and obey active resource ceilings.
+5 For other under-defined nonessential parameters, choose a commonly used defensible value, proceed, and record the value, provenance/rationale, alternatives, and expected sensitivity. Block only when no scientifically valid default can preserve the requested meaning.
+

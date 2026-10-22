@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+    "/root/simulation_parallel_batch_20261022_1955/test_001/orca/co2/co2.inp"
+  ],
+  "cwd": "/root/simulation_parallel_batch_20261022_1955/test_001/orca/co2",
+  "timeout_s": 900,
+  "status": "completed",
+  "exit_code": 0,
+  "elapsed_s": 6.374104261398315
+}

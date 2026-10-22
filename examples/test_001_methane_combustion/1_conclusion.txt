@@ -1,0 +1,6 @@
+Question 1 conclusion
+Status: COMPLETED
+Method: gas-phase ORCA 6.1.1 r2SCAN-3c Opt+Freq, 298.15 K harmonic thermochemistry when parsed; triplet O2.
+Computed reaction enthalpy for CH4 + 2 O2 -> CO2 + 2 H2O: -720.055 kJ/mol.
+Activation energy: NOT REPORTED. Methane combustion is a radical-chain network, not one elementary reaction; a single transition state and unique Ea cannot be defined without specifying the elementary step/kinetic model. The plot therefore does not invent a barrier.
+Assumptions: vacuum; 298.15 K; ideal-gas harmonic thermochemistry; one conformer per species.

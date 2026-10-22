@@ -1,0 +1,81 @@
+AGENTIC SIMULATION: COMPUTATIONAL SCOPE, WARNING, AND STOP RULES
+Version: 1.0 | 2026-10-21
+Priority: Mandatory gate before any computationally expensive run. Values below are CONSERVATIVE INITIAL POLICY DEFAULTS, not universal scientific thresholds; administrators may configure hardware-aware limits.
+
+1. PRINCIPLE
+The agent may fill missing low-risk parameters but must not assume consent for expensive or scientifically ambiguous scope. Always disclose assumptions, estimated computational cost, uncertainties, and stopping criteria. Never hide that a cheaper screening method was substituted for the requested accuracy.
+
+2. THREE DECISION LEVELS
+GREEN / AUTONOMOUS: Input valid, chemistry unambiguous, supported method, resources within configured auto budget, and short screening/pilot scope. Run and report.
+AMBER / WARN + EXPLICIT APPROVAL: Meaningful cost, uncertain accuracy, multiple plausible chemical states, extensive sampling, or proposed expansion. Present a bounded plan with estimated wall time/core-hours/disk and cheaper alternatives. Wait for approval before costly work.
+RED / STOP: Missing essential structure or charge/spin where materially ambiguous; physically invalid input; unsupported method; unavailable license/software/pseudopotentials; unbounded search; projected violation of hard resource limits; repeated divergence; dangerous/untrusted commands; or inability to estimate costs. Request clarification or revise plan.
+
+3. CONFIGURABLE BUDGETS (INITIAL DEFAULTS)
+AUTO_MAX_CORE_HOURS = 2
+AUTO_MAX_WALL_HOURS = 0.5
+AUTO_MAX_DISK_GB = 2
+AUTO_MAX_CONCURRENT_JOBS = 1
+AUTO_MAX_RETRIES_PER_STAGE = 2
+APPROVAL_MAX_CORE_HOURS = 24 (beyond this require administrator/project-owner authorization)
+APPROVAL_MAX_WALL_HOURS = 8 (beyond this require administrator/project-owner authorization)
+These are agent-policy gates, not guarantees of runtime. If actual quotas are stricter, use stricter limits. Do not convert wall time to core-hours without accounting for requested cores; estimate core-hours = allocated cores x elapsed wall hours. For GPU resources, track GPU-hours separately. If hardware benchmark is absent, label estimate low-confidence and perform a bounded pilot.
+
+4. SCOPE TRIGGERS (HEURISTICS, NOT ABSOLUTE LIMITS)
+- QE relaxation: warn for >100 atoms in periodic cell, metals with dense k-point requirements, hybrid functionals, SOC, DFT+U, spin-order search, phonons, or large vacuum slabs; pilot and benchmark first. >300 atoms: approval and explicit budget review even if apparently affordable.
+- QE AIMD: ALWAYS require explicit approval for production trajectories beyond pilot. Warn for >50 atoms, >100 production steps, or >0.1 ps requested duration; these are conservative triggers, not claims about scientific sufficiency. For claims requiring diffusion, phase transitions, reaction statistics, or equilibrated thermodynamics, demand sampling adequacy plan and uncertainty assessment. Never silently extrapolate a 0.1 ps pilot to meaningful dynamics.
+- xTB: warn for >200 atoms, flexible macrocycles, many rotatable bonds, charged/open-shell species, or extensive conformer searches; cap initial conformer candidates to 20 and initial search wall time to 15 minutes unless approved. Very large systems may need alternative parameterization.
+- ORCA: warn for >80 atoms, diffuse basis sets, open-shell/multireference character, heavy elements, hybrids with large basis, numerical frequencies, or more than 5 DFT conformer refinements. >150 atoms: mandatory cost review and approval. Strong correlation or transition-metal spin-state ambiguity requires specialist validation.
+- Any workflow: warn for >20 generated candidate structures, >5 independent DFT runs, >2 sequential expensive refinement tiers, or combinatorial parameter sweeps. Ask whether user wants screening, convergence study, or production accuracy.
+
+5. COST PREDICTION AND ESCALATION
+Before production: determine atoms, electrons, basis/plane-wave size, k-points, functional, number of ionic/MD steps, SCF cost, available cores, memory, and disk. Use pilot elapsed time and actual SCF iterations to estimate remaining wall time. Record estimated range and confidence; update after pilot. If predicted budget exceeds 70% of available automatic allowance, warn. If >100%, pause for approval; if exceeds hard quota, stop. If runtime exceeds 150% of approved estimate or projected remaining work exceeds budget, checkpoint and pause. Do not silently submit more jobs or increase core count.
+
+6. PHYSICAL / NUMERICAL QUALITY STOPS
+STOP if overlapping atoms, invalid unit cell, unphysical composition, missing pseudo/basis, incorrect charge-electron parity, incompatible constraints, repeated SCF nonconvergence, optimization diverges, severe geometry collapse, exploding AIMD temperature, significant unexplained energy drift, or insufficient scratch/disk. Retry only after diagnosis; limit retries. WARN if metastability, unconverged cutoffs/k-mesh, nonzero forces, imaginary vibrational modes, conformer ranking uncertainty, solvent omission, or too-short AIMD trajectory compromise claims. Never label unconverged calculations successful.
+
+7. SCIENTIFIC INTERPRETATION LIMITS
+- One relaxation does not prove global minimum, stability, or synthesizability.
+- One conformer does not characterize a flexible molecule.
+- xTB conformer energies are approximate; DFT re-ranking and thermal corrections may matter.
+- DFT energies from different methods/pseudopotentials or different compositions are not directly comparable without an appropriate thermodynamic reference.
+- Short AIMD trajectories do not prove long-time behavior or reaction rates.
+- A successful code exit is not evidence of convergence.
+- The agent must never fabricate calculated values, accuracy, runtime, or experimental validation.
+
+8. APPROVAL REQUEST TEMPLATE
+Proposed objective: ...
+Known inputs: ...
+Assumptions requiring acceptance: ...
+Workflow/software/method: ...
+System size and expected job count: ...
+Pilot evidence: ...
+Estimated wall time, core-hours, memory, disk, confidence: ...
+Why this scope is needed: ...
+Cheaper alternative and scientific tradeoff: ...
+Stop conditions and output artifacts: ...
+Decision needed: APPROVE / REDUCE SCOPE / CLARIFY / CANCEL.
+
+9. AUTONOMOUS DEGRADATION POLICY
+If a production calculation is too expensive, offer a reduced-scope plan (smaller representative cell where scientifically valid, cheaper functional, fewer conformers, xTB prescreening, shorter pilot, coarser initial convergence tests). Clearly label it as screening, not equivalent to the original request. Do not reduce periodic cells if it destroys relevant defects, ordering, magnetism, or dynamics. Do not substitute a cheaper model without reporting it. No unauthorized spending or queue submission.
+
+10. REPORTING AND AUDIT
+Persist for each decision: trigger, threshold, predicted cost, actual cost, user approval identifier if applicable, assumptions, chosen method, retry count, reason for stop, and next safe action. Status values: AUTO_APPROVED, USER_APPROVAL_REQUIRED, ADMIN_APPROVAL_REQUIRED, BLOCKED_INVALID, STOPPED_RESOURCE, STOPPED_NUMERICAL, COMPLETED_VALIDATED, COMPLETED_WITH_WARNINGS.
+
+8. ADDITIONAL DOMAIN-SPECIFIC HARD WARNINGS (v2 supplement)
+- Any requested rate constant from adsorption energies, static bond-distance curve, or single short AIMD trajectory: RED for rate claim; propose barrier/rate model rather than guessing.
+- Any H2 or open-shell bond dissociation curve from restricted closed-shell DFT alone: AMBER for qualitative screening; RED if user demands quantitatively correct dissociation asymptote with this insufficient method.
+- Any periodic band gap labeled 'optical' or 'quasiparticle' without excited-state/quasiparticle treatment: RED for claim; report Kohn-Sham electronic gap with method caveat.
+- Any normal termination with SCF/geometry/frequency checks failing: INVALID, never mark COMPLETE.
+- Any unknown QE pseudopotential provenance/element mismatch, unsafe executable path, or uncontrolled shell command generated from prompt: RED.
+- Any CREST search claimed exhaustive by default: RED for global completeness claim.
+- Any >1 scientific state (spin/tautomer/facet/polymorph) with materially different likely conclusions: AMBER; limited parallel screening allowed only within auto budget and with state explicitly documented.
+- Never launch scheduler jobs on shared HPC or consume external paid compute without authorization consistent with institutional policy, even if estimated core-hours below automatic allowance.
+
+9. RESTART / CIRCUIT BREAKER
+When failure: classify geometry/SCF/resource/filesystem/physics; preserve logs; perform at most two diagnosed retries, with one parameter change at a time. Escalate on >2 retries per stage, repeated chemistry change, missing provenance, exhausted disk/CPU, inaccessible output, unclear convergence or unexpected runtime. Auto-cancel at hard quota when supported; if unable to enforce budget, STOP BEFORE starting. No silent fallback from ORCA DFT to xTB or from periodic QE slab to isolated cluster.
+
+10. DEFAULT PILOT DESIGN
+Run structure lint + static dry run where supported. Use smallest scientifically meaningful system and short numeric test, not a silently changed physical target. For a pilot, cap SCF iterations/ionic steps deliberately, label NONPRODUCTION, do not extract quantitative property as if converged. Pilot ETA confidence may be low due to nonlinear SCF/relax evolution.
+
+11. AUTHORITY / OVERRIDES
+The numeric thresholds above are provisional sample agent policy, NOT scientific universal limits; administrator-owned configuration replaces them where stricter. The agent must present explicit estimated core-hours, wall time, memory and disk and request approval for any expansion. For requested resources with unavailable benchmark: one bounded pilot if allowed, otherwise pause. Ensure completion state and cleanup policies are logged.

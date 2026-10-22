@@ -1,0 +1,68 @@
+AGENTIC SIMULATION KNOWLEDGE BASE — 02 ORCA (MOLECULAR ELECTRONIC STRUCTURE)
+Scope: primarily isolated molecular organic chemistry, complexes and fragments. Version-specific input checks mandatory; examples target ORCA 6.x style. <PLACEHOLDERS> are not legal input syntax. Not a periodic-solid replacement.
+
+A. INTAKE / STATE DEFINITION
+Require coordinates (XYZ, SMILES converted with external builder, etc.), element list, atom map, stereochemistry, net charge Q and multiplicity M. If user specifies neither: for unambiguously neutral, ordinary closed-shell molecule try Q=0, M=1; for radicals, ions, electron-transfer, transition-metal complexes, dissociation products, do NOT silently treat as singlet. Check (number electrons - (M-1)) even, M positive, molecular fragments and bond topology. Common pitfalls: tautomers, protonation, solvent, isomer, conformer, counterion, zwitterions, functional dependence.
+
+B. METHOD LADDER
+Cheap initial xTB opt -> ORCA geometry at practical dispersion-corrected DFT level (e.g. r2SCAN-3c when available/version-compatible) -> harmonic frequencies for stable minimum -> improved single-point functional/basis/solvation if question merits it. For specific chemistry choose tested methods, e.g. dispersion-corrected hybrid + def2-SVP for pilot and def2-TZVP single-point; no universal DFT level. Define RI/auxiliary basis via valid ORCA keywords for selected functional. Don't apply a solvent model by default when gas-phase question; disclose gas-phase assumption and consider CPCM/SMD only with specified solvent/version support. For radicals/diradicals multireference or unrestricted diagnostics may be necessary; DFT dissociation may be unreliable.
+
+C. TEMPLATE GEOMETRY OPTIMIZATION
+Save opt.inp:
+! r2SCAN-3c Opt TightSCF
+%pal nprocs <NCORES> end
+%maxcore <MEMORY_MB_PER_CORE>
+* xyz <CHARGE> <MULTIPLICITY>
+<CARTESIAN_XYZ_LINES>
+*
+Replace method if not installed/supported. In ORCA %maxcore is MB PER CORE (allow overall system headroom); obey job's process memory. Alternative (verify version):
+! PBE0 D4 def2-SVP Opt TightSCF
+%pal nprocs <NCORES> end
+* xyzfile <Q> <M> start.xyz
+Check optimizer converged and final geometry not reorganized into unintended connectivity; final SCF and spin contamination where relevant. Never reuse one geometry for all conformers without considering conformational basins.
+
+D. TEMPLATE OPT+FREQ (LOCAL MINIMUM)
+! r2SCAN-3c Opt Freq TightSCF
+%pal nprocs <NCORES> end
+%maxcore <MEMORY_MB_PER_CORE>
+* xyzfile <Q> <M> initial.xyz
+Freq computes Hessian/normal modes; true stable minimum should have no significant imaginary frequencies (ignore only with careful numerical/near-zero analysis). Translation/rotation low modes and floppy molecules require care; thermochemical corrections depend on temperature, pressure, standard state and harmonic approximations. Do not claim kinetics from a vibrational frequency calculation alone.
+
+E. TEMPLATE SINGLE POINT AT REFINED LEVEL
+! PBE0 D4 def2-TZVP TightSCF
+%pal nprocs <NCORES> end
+%maxcore <MEMORY_MB_PER_CORE>
+* xyzfile <Q> <M> optimized.xyz
+Extract FINAL SINGLE POINT ENERGY with explicit unit Eh; verify electronic solution and molecular state. A single-point is energy at fixed nuclei, NOT relaxed energy unless geometry was optimized separately. Avoid energy differences between inconsistent basis/solvent/charge/reference systems; separately compute each chemical reference at compatible levels.
+
+F. TEMPLATE SOLVENT (CHECK SYNTAX)
+For a solvent-supported method on installed version:
+! r2SCAN-3c Opt TightSCF CPCM(Water)
+%pal nprocs <NCORES> end
+* xyzfile <Q> <M> initial.xyz
+Use solvent NAME supported by ORCA manual; CPCM(Water) is an illustration, not universally appropriate. Nonpolar solvent or specified dielectric/model may produce different results. Do not mix gas/solution free energies without consistent cycles; 'binding free energy in solution' requires solvent and entropy/standard-state treatment, not only electronic energy differences.
+
+G. HOMO/LUMO AND RELATED OBSERVABLES
+Orbital eigenvalues parse with occupancy and spin channel; report HOMO/LUMO (Eh/eV), difference and method, geometry/solvent. Spin-unrestricted has alpha/beta manifolds and ambiguous single HOMO/LUMO naming; report both channels and occupation. The Kohn-Sham HOMO–LUMO gap is NOT necessarily optical absorption, fundamental quasiparticle gap, or experimental ionization energy. For electronic excitations use appropriate TDDFT/excited-state model after ground-state verification (separate specialist template and approval if needed). For IP/EA use explicit delta-SCF energies of charged states with compatible geometry/adiabatic vs vertical definitions.
+
+H. BINDING / INTERMOLECULAR INTERACTIONS
+Prepare plausible complex poses (multiple orientations); ORCA optimize complex and fragments, identify proton transfer or covalent reaction. E_bind = E_AB - E_A - E_B, lower/negative favorable. Decide fragment energies in isolated relaxed geometries (includes deformation) vs frozen complex geometries (interaction energy). Small basis BSSE: consider counterpoise with version-validated ghost atoms, dispersion, solvent; report possible superposition error. Molecular adsorption onto solid represented by finite cluster suffers edge effects: prefer QE slab for extended surfaces.
+
+I. BOND BREAKING / POTENTIAL ENERGY CURVE
+H2 illustration: geometry fixed at several H-H distances (e.g., 0.5–5 Å, denser near equilibrium and dissociation transition). Independently perform single-point for each with same charge/basis/functional; inspect spin-restricted vs unrestricted solutions and spin contamination, branch crossings. Restricted closed-shell single determinant yields qualitatively wrong homolytic dissociation at large R; broken-symmetry DFT also has limitations; validated multireference methods needed for quantitative bond dissociation curves where strong static correlation. E(R) relative to dissociated fragments must use properly defined electronic spin states. A constrained scan / relaxed scan is a PES, NOT kinetics or transition-state barrier by itself.
+A scan may be performed by external geometry generator creating xyz at each R with independent ORCA single-point job. ORCA supports scan/constraints via %geom, but syntax and coordinate indexing must be verified against installed version prior to generating those inputs.
+
+J. TRANSITION STATES / REACTIONS
+Reaction barrier E‡ or ΔG‡ requires plausible reactant/product channels, TS search (NEB elsewhere/ORCA TS optimization), one characteristic imaginary mode and IRC or trajectory connectivity. Multiple competing pathways and spin/proton transfer possible. Rates require kinetic model, concentration, temperature and solvent. Do not turn bond dissociation energy into k without barrier/partition functions.
+
+K. EXECUTION / OUTPUT QUALITY
+Command: orca opt.inp > opt.out (normally launch ORCA driver directly; follow ORCA manual regarding MPI). Unique directory and basename per job to avoid scratch collisions. Parse: ORCA TERMINATED NORMALLY, SCF CONVERGED, THE OPTIMIZATION HAS CONVERGED (when Opt), number/magnitude of imaginary frequencies, Cartesian coordinates and spin expectation where applicable. An SCF single point succeeded but optimizer failed is not an optimized structure. Log ORCA executable version, requested/actual nprocs, maxcore, method, basis, dispersion, grids, solvent and output checksum.
+
+L. SETTINGS MENU / TROUBLESHOOTING
+Run types: SP / Opt / TightOpt / Freq / NumFreq / excited-state methods / TS and constrained scans (advanced).
+Method: composite low-cost, GGA/meta-GGA, hybrid, range-separated, double hybrid, wavefunction theory if supported; basis def2-SVP/TZVP/TZVPP plus diffuse where chemically justified; appropriate RI auxiliary basis; D3/D4 dispersion.
+SCF: TightSCF; convergence aids and different initial guesses after diagnosis. Numerical grids and open-shell SCF are chemistry-dependent; default methods may be insufficient for anions, metal complexes and dissociation.
+Solvation: gas / CPCM / SMD (version and parameter support check); always record standard state.
+Common failures: wrong multiplicity, SCF nonconvergence, imaginary mode after supposed minimum, fragments dissociate, optimizer hops reaction channel, very large basis memory blowup. Retry at most configured number after identifying cause; do not simply raise MaxIter forever.
+
+Official refs: https://orca-manual.mpi-muelheim.mpg.de/contents/essentialelements/basics.html ; https://orca-manual.mpi-muelheim.mpg.de/contents/structurereactivity/optimizations.html ; https://orca-manual.mpi-muelheim.mpg.de/contents/structurereactivity/frequencies.html

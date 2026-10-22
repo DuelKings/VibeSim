@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0",
+  "preferred_execution_target": "AUTO",
+  "workspace_windows": null,
+  "workspace_wsl": null,
+  "pseudo_root_windows": null,
+  "pseudo_root_wsl": null,
+  "max_cores_per_job": null,
+  "max_ram_gb_per_job": null,
+  "max_concurrent_jobs": null,
+  "max_corehours_per_request": null,
+  "allow_unattended": false,
+  "allow_external_downloads": false,
+  "execution_permission": "ASK_EACH_TIME",
+  "comment": "Copy to user_preferences.json and fill only verified/user-approved values. The initializer does NOT grant permission."
+}

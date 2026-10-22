@@ -1,0 +1,4 @@
+! r2SCAN-3c Opt Freq TightSCF
+%pal nprocs 1 end
+%maxcore 4000
+* xyzfile 0 3 start.xyz

@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "execution_target": "WSL_OR_NATIVE_LINUX",
+  "wsl_distribution": "REPLACE_IF_WINDOWS",
+  "shared_artifact_dir_windows": "REPLACE_OR_REMOVE_ON_LINUX",
+  "shared_artifact_dir_linux": "/path/to/shared/artifacts",
+  "linux_scratch_dir": "/path/to/fast/scratch",
+  "executables": {
+    "python": "/usr/bin/python3",
+    "orca": "/path/to/orca",
+    "qe_pw": "/path/to/pw.x",
+    "xtb": "/path/to/xtb",
+    "crest": "/path/to/crest",
+    "mpirun": "/path/to/mpirun"
+  },
+  "pseudopotential_root": "/path/to/pseudopotentials",
+  "limits": {
+    "max_simulator_processes": 16,
+    "minimum_available_ram_gib": 4,
+    "wall_hours_per_question": 120,
+    "warning_hours_per_question": 96,
+    "max_attempts_per_stage": 3
+  }
+}

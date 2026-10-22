@@ -1,0 +1,7 @@
+Question 2 conclusion
+Status: COMPLETED
+Definition: gas-phase homolytic cleavage C12H10 (singlet) -> 2 C6H5 radicals (doublets).
+Method: ORCA 6.1.1 r2SCAN-3c Opt+Freq, vacuum, 298.15 K harmonic approximation.
+Electronic dissociation energy De: 476.493 kJ/mol.
+Computed ΔH(298.15 K): 461.020 kJ/mol.
+Structural change: cleavage removes the inter-ring bond and yields two separately relaxed planar phenyl radicals; optimized XYZ files are in each ORCA job directory. This single-conformer DFT estimate has functional, harmonic, and open-shell uncertainty.

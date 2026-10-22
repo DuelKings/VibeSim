@@ -1,0 +1,39 @@
+AGENTIC SIMULATION KNOWLEDGE BASE — 03 xTB AND CREST
+Scope: rapid molecular geometry optimization, conformational exploration, rough rankings, approximate electronic descriptors. xTB alone does not implement an exhaustive conformer search; CREST or another conformer engine is required for systematic sampling. Version/flags must be verified with local --help and relevant manuals.
+
+1. PRECHECK
+Structure XYZ is required, generated from validated molecular topology/SMILES. Preserve atom ordering and stereochemistry; assign net charge and alpha-beta unpaired-electron count UHF, not multiplicity directly: for simple high-spin case UHF=M-1, but electronically complex cases require verification. Verify elements supported by chosen GFN parameterization. Use unique scratch directories; backup input structure and mapping.
+
+2. CHEMICAL STATE / ENVIRONMENT
+Do not assume neutrality for arbitrary SMILES if formal charges present; read explicit formal charge. Account for salt/ion pairs and protonation/tautomer alternatives separately. Vacuum/gas phase if no solvent specified, disclosed. Implicit solvent ALPB/GBSA choices are optional and should align between conformer sampling/refinement whenever feasible; do not compare energy rankings across incompatible solvents.
+
+3. METHOD SELECTION
+GFN2-xTB: usual preliminary molecular geometry and conformer ranking; GFN1-xTB alternate where validated; GFN-FF faster force field for large conformer surveys if supported; g-xTB only if version/build supports it. Semiempirical accuracy varies for strained bonds, radicals, transition metal complexes, reactions, strong noncovalent interactions. The apparent lowest-energy conformer may not be global minimum; sampling convergence is empirical.
+
+4. xTB COMMAND TEMPLATES
+Preopt (local xTB syntax verify):
+xtb start.xyz --gfn 2 --opt normal --chrg <INTEGER_Q> --uhf <INTEGER_UNPAIRED> > xtb_opt.out
+Option example solvent (if supported): --alpb water ; for thread limit set OMP_NUM_THREADS=<N> in environment.
+Single-point at fixed geometry:
+xtb optimized.xyz --gfn 2 --sp --chrg <Q> --uhf <UHF> > xtb_sp.out
+Geometry quality: check optimization success, residual gradient, intact bond graph, no unintended tautomerization or ion fragmentation, no clash. Output naming includes xtbopt.xyz (verify version). The energy alone is not an adsorption rate or accurate transition-state barrier.
+
+5. CREST CONFORMER SEARCH (SEPARATE BINARY)
+Typical CREST command (validate version and available flags):
+crest xtbopt.xyz --gfn2 --chrg <Q> --uhf <UHF> -T <THREADS> > crest.out
+Optional --alpb water if condition specified; search controls vary by CREST 2.x/3.x. Current documentation may accept composite --gfn2@gfnff for prescreening; use only when exact installed version confirms behavior. Other possibilities: --ewin <KCAL_MOL>, --quick / --squick, and constraint input -cinp <FILE> (version check).
+Record random seed if accepted, start conformer(s), search duration/energy window, search count, and ranking method. CREST may output crest_conformers.xyz, crest_best.xyz and energy files; filenames/version dependent. CREST ensemble searches can be expensive and stochastic; initial capped pass then budget check. If no CREST binary present, use dedicated RDKit embedding/torsion utility + xTB local optimizations; explicitly call this LESS comprehensive than CREST.
+
+6. DEDUPLICATION AND SELECTION
+Inspect connectivity, stereochemistry, protonation, chirality (do NOT merge enantiomers when user cares), torsions, heavy-atom RMSD after alignment, and energy windows. Geometry RMSD alone can fail for symmetry/ring flips. Reject broken chemistry and duplicates, keep a diverse shortlist rather than simply 5 lowest near-identical structures. For free energies or room-temperature conformer weights, electronic energies are not sufficient; add compatible thermal/solvation estimates, uncertainties and Boltzmann populations only when valid.
+
+7. ORCA HANDOFF
+Select top K (budget-controlled), use CREST coordinates as separate starts, ORCA optimize each with consistent charge/multiplicity, then rerank at selected DFT level; optional frequencies and refined SP. Observe conformer collapse to same minima; do not count identical optimized conformers as distinct. Return screening ranking + DFT ranking separately with geometry and method.
+
+8. ADVANCED SETTINGS / WARNINGS
+Constraints: freeze or restrain atoms or bonds using validated xTB/CREST constraint file; never conflate fixed bond scan with relaxation. Solvation --alpb vs --gbsa, default implicit solvent none. Charged, radicals, metal coordination, proton-transfer complexes or macrocycles -> warn, may require specialist treatment and multiple initial conformations. Large molecule > policy atom threshold or many rotatable bonds -> limit search time and escalate.
+
+9. OUTPUT ACCEPTANCE
+Output includes accepted conformer geometries, energies and units, duplicates removed, chemistry verified, number attempted/completed, ranking uncertainty, prescreen method and mapping to ORCA files. Require evidence that conformer search ended normally. Do not assert all conformers found.
+
+Reference: https://crest-lab.github.io/crest-docs/page/documentation/keywords.html ; https://github.com/crest-lab/crest/blob/master/docs/man/crest.adoc ; xTB documentation: https://xtb-docs.readthedocs.io/

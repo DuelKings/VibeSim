@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "preferred_execution_target": "CONFIGURE_LOCALLY",
+  "workspace_windows": null,
+  "workspace_wsl": null,
+  "pseudo_root_windows": null,
+  "pseudo_root_wsl": null,
+  "max_cores_per_job": null,
+  "max_ram_gb_per_job": null,
+  "max_concurrent_jobs": 16,
+  "max_walltime_hours_per_question": 120,
+  "warning_hours_per_question": 96,
+  "minimum_available_ram_gib": 4,
+  "max_retries_per_stage": 3,
+  "allow_unattended": false,
+  "allow_external_downloads": false,
+  "execution_permission": "ASK_EACH_TIME",
+  "comment": "Portable defaults. Verify local paths, hardware, licences, pseudopotentials, safety limits, and execution authorization before running simulations."
+}

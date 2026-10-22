@@ -1,0 +1,342 @@
+[
+  {
+    "name": "dz_0p5",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_0p5.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_0p5.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.9727439739999997,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 0.5,
+    "energy_hartree": -1.079370053079
+  },
+  {
+    "name": "dz_0p6",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_0p6.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_0p6.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.671443729,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 0.6,
+    "energy_hartree": -1.139173294374
+  },
+  {
+    "name": "dz_0p68",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_0p68.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_0p68.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.5198835810000002,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 0.68,
+    "energy_hartree": -1.158561120346
+  },
+  {
+    "name": "dz_0p72",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_0p72.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_0p72.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.5204023230000008,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 0.72,
+    "energy_hartree": -1.162478699236
+  },
+  {
+    "name": "dz_0p76",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_0p76.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_0p76.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.570454646,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 0.76,
+    "energy_hartree": -1.163672458226
+  },
+  {
+    "name": "dz_0p8",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_0p8.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_0p8.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.520800071,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 0.8,
+    "energy_hartree": -1.162750762842
+  },
+  {
+    "name": "dz_0p9",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_0p9.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_0p9.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.5707660729999997,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 0.9,
+    "energy_hartree": -1.154081705586
+  },
+  {
+    "name": "dz_1p0",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_1p0.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_1p0.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.5210316160000001,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 1.0,
+    "energy_hartree": -1.140073480105
+  },
+  {
+    "name": "dz_1p2",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_1p2.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_1p2.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.5703513650000005,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 1.2,
+    "energy_hartree": -1.106855191558
+  },
+  {
+    "name": "dz_1p5",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_1p5.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_1p5.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.570835804999998,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 1.5,
+    "energy_hartree": -1.061534948671
+  },
+  {
+    "name": "dz_2p0",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_2p0.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_2p0.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.570527177999999,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 2.0,
+    "energy_hartree": -1.017594113541
+  },
+  {
+    "name": "dz_3p0",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_3p0.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_3p0.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.5204519679999997,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 3.0,
+    "energy_hartree": -0.999550618551
+  },
+  {
+    "name": "dz_4p0",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_4p0.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_4p0.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.5207340579999986,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 4.0,
+    "energy_hartree": -0.998606186138
+  },
+  {
+    "name": "dz_6p0",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "dz_6p0.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "dz_6p0.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.5209797020000018,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": 6.0,
+    "energy_hartree": -0.99855706763
+  },
+  {
+    "name": "H_dz",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "H_dz.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "H_dz.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.7211161429999997,
+    "returncode": 0,
+    "basis": "cc-pVDZ",
+    "R_angstrom": null,
+    "energy_hartree": -0.499278403419
+  },
+  {
+    "name": "tz_0p74",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "tz_0p74.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "tz_0p74.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 2.6731379430000004,
+    "returncode": 0,
+    "basis": "cc-pVTZ",
+    "R_angstrom": 0.74,
+    "energy_hartree": -1.172332106523
+  },
+  {
+    "name": "tz_0p76",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "tz_0p76.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "tz_0p76.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 2.773765573999995,
+    "returncode": 0,
+    "basis": "cc-pVTZ",
+    "R_angstrom": 0.76,
+    "energy_hartree": -1.172144128175
+  },
+  {
+    "name": "tz_2p0",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "tz_2p0.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "tz_2p0.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 2.873795566999995,
+    "returncode": 0,
+    "basis": "cc-pVTZ",
+    "R_angstrom": 2.0,
+    "energy_hartree": -1.020455004818
+  },
+  {
+    "name": "tz_6p0",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "tz_6p0.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "tz_6p0.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 2.373174579999997,
+    "returncode": 0,
+    "basis": "cc-pVTZ",
+    "R_angstrom": 6.0,
+    "energy_hartree": -0.999620793312
+  },
+  {
+    "name": "H_tz",
+    "argv": [
+      "/usr/bin/time",
+      "-v",
+      "-o",
+      "H_tz.resources.txt",
+      "/opt/orca/orca_6_1_1_linux_x86-64_shared_openmpi418_nodmrg/orca",
+      "H_tz.inp"
+    ],
+    "cwd": "<ORIGINAL_RUN_DIRECTORY>",
+    "elapsed_s": 1.8212144090000066,
+    "returncode": 0,
+    "basis": "cc-pVTZ",
+    "R_angstrom": null,
+    "energy_hartree": -0.499809811301
+  }
+]
